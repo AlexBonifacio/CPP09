@@ -5,8 +5,8 @@
 
 struct Pair
 {
-	int a;
-	int b;
+	int big;
+	int small;
 };
 
 class PmergeMe
@@ -32,11 +32,15 @@ class PmergeMe
 			return _init;
 		}
 
-		const std::vector<Pair>& getPairVect() const {return _pair;};
+		std::vector<Pair> makePair(const std::vector<int>& input);
+		std::vector<int> mergeInsertion(std::vector<int> input);
+		void insertSmalls(std::vector<int>& result, std::vector<Pair> const& pairs);
+		std::vector<size_t> buildJacob(size_t i);
 
 	private:
-		std::vector<Pair> _pair;
 		std::vector<int> _init;
+		std::vector<int> _test;
+
 		PmergeMe();
 		PmergeMe(const PmergeMe& copy);
 		PmergeMe& operator=(const PmergeMe& other);
