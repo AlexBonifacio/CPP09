@@ -9,41 +9,44 @@ struct Pair
 	int small;
 };
 
-
 class PmergeMe
 {
-	public:
-		PmergeMe(std::vector<int> vect);
-		~PmergeMe();
-		template<typename T>
-		void printVector(const std::vector<T>& vect)
+public:
+	PmergeMe(std::vector<int> vect);
+	~PmergeMe();
+	template <typename T>
+	void printVector(const std::vector<T> &vect)
+	{
+		typename std::vector<T>::const_iterator it;
+		it = vect.begin();
+		while (it != vect.end())
 		{
-			typename std::vector<T>::const_iterator it;
-			it = vect.begin();
-			while (it != vect.end())
-			{
-				std::cout << *it << " ";
-				++it;
-			}
-			std::cout << "\n";
+			std::cout << *it << " ";
+			++it;
 		}
+		std::cout << "\n";
+	}
 
-		const std::vector<int>& getVector() const
-		{
-			return _init;
-		}
+	const std::vector<int> &getVector() const
+	{
+		return _init;
+	}
 
-		std::vector<Pair> makePair(const std::vector<int>& input);
-		std::vector<int> mergeInsertion(std::vector<int> input);
-		void insertSmalls(std::vector<int>& result, std::vector<Pair> const& pairs);
-		std::vector<size_t> buildJacob(size_t i);
+	std::vector<int> mergeInsertion(std::vector<int> input);
 
-	private:
-		const std::vector<int> _init;
+private:
+	const std::vector<int> _init;
 
-		PmergeMe();
-		PmergeMe(const PmergeMe& copy);
-		PmergeMe& operator=(const PmergeMe& other);
+	PmergeMe();
+	PmergeMe(const PmergeMe &copy);
+	PmergeMe &operator=(const PmergeMe &other);
+
+	std::vector<Pair> makePair(const std::vector<int> &input);
+	std::vector<size_t> buildJacob(size_t i);
+	std::vector<size_t> buildBigPositions(std::vector<int> const &chain, std::vector<Pair> const &pairs);
+	void insertOdd(std::vector<int> &res, int value);
+	void insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs);
+	size_t binaryInsert(std::vector<int> const &res, int value, size_t right);
 };
 
-std::ostream& operator<<(std::ostream& os, const Pair& pair);
+std::ostream &operator<<(std::ostream &os, const Pair &pair);

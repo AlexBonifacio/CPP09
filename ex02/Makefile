@@ -2,7 +2,7 @@
 NAME = PmergeMe.out
 
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP -O3
 
 SRCS = main.cpp PmergeMe.cpp
 OBJ_DIR = obj

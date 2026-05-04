@@ -3,8 +3,7 @@
 #include <algorithm>
 #include <numeric> //adjacent_difference
 
-void insert(std::vector<int> &result, int small, int big);
-static void insertOdd(std::vector<int> &res, int value);
+size_t insert(std::vector<int> const &chain, int value, size_t right);
 
 PmergeMe::PmergeMe(std::vector<int> vect) : _init(vect)
 {
@@ -12,7 +11,7 @@ PmergeMe::PmergeMe(std::vector<int> vect) : _init(vect)
 	{
 		throw std::logic_error("Error: provide at least 2 numbers");
 	}
-	std::vector<int>tmp = _init;
+	std::vector<int> tmp = _init;
 
 	sort(tmp.begin(), tmp.end());
 	std::adjacent_difference(tmp.begin(), tmp.end(), tmp.begin());
@@ -24,8 +23,7 @@ PmergeMe::PmergeMe(std::vector<int> vect) : _init(vect)
 
 PmergeMe::~PmergeMe() {}
 
-
-std::vector<int> extractBigs(std::vector<Pair> const  &pairs)
+std::vector<int> extractBigs(std::vector<Pair> const &pairs)
 {
 	std::vector<int> bigs;
 
@@ -55,7 +53,7 @@ std::vector<size_t> PmergeMe::buildJacob(size_t n)
 	jacob.push_back(0);
 	jacob.push_back(1);
 	y = 1;
-	while(jacob.back() < n)
+	while (jacob.back() < n)
 	{
 		jacob.push_back(jacob[y - 1] * 2 + jacob[y]);
 		++y;
@@ -76,8 +74,8 @@ std::vector<size_t> PmergeMe::buildJacob(size_t n)
 		}
 		++i;
 	}
-	std::cout << "build jacob: ";
-	printVector(res);
+	// std::cout << "build jacob: ";
+	// printVector(res);
 	return res;
 }
 
@@ -103,48 +101,85 @@ std::vector<int> PmergeMe::mergeInsertion(std::vector<int> input)
 	insertSmalls(sorted, pairs);
 	if (is_odd)
 		insertOdd(sorted, odd);
-	std::cout << "print vector: ";
-	printVector(sorted);
-	std::cout << "\n";
+	// std::cout << "print vector: ";
+	// printVector(sorted);
+	// std::cout << "\n";
 
 	return sorted;
 }
 
-void insert(std::vector<int> &result, int small, int big)
+std::vector<size_t> PmergeMe::buildBigPositions(std::vector<int> const &chain,std::vector<Pair> const &pairs)
+{
+	std::vector<size_t> positions;
+	size_t i;
+	size_t j;
+
+	i = 0;
+	while (i < pairs.size())
+	{
+		j = 0;
+		while (j < chain.size())
+		{
+			if (chain[j] == pairs[i].big)
+			{
+				positions.push_back(j);
+				break;
+			}
+			j++;
+		}
+		i++;
+	}
+	return positions;
+}
+
+size_t PmergeMe::binaryInsert(std::vector<int> const &res, int value, size_t right)
 {
 
-	std::vector<int>::iterator pos;
-	std::vector<int>::iterator max_bound;
+	size_t left;
+	size_t mid;
+
+	left = 0;
+	while (left < right)
+	{
+		mid = left + (right - left) / 2;
+		if (res[mid] < value)
+			left = mid + 1;
+		else
+			right = mid;
+	}
 	
-	max_bound = std::find(result.begin(), result.end(), big);
-	if (max_bound == result.end())
-		max_bound = result.end();
-	pos = std::lower_bound(result.begin(), max_bound, small); // pos not less than small
-	result.insert(pos, small);									 // insert before pos
+	return left; // insert before pos
 }
 
 void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs)
 {
-	size_t i, size;
+	std::vector<size_t> order;
+	std::vector<size_t> big_pos;
+	size_t i;
+	size_t j;
+	size_t idx;
+	size_t insert_pos;
+
+	order = buildJacob(pairs.size());
+	big_pos = buildBigPositions(result, pairs);
 
 	i = 0;
-	size = pairs.size();
-	std::vector<size_t> jacob = buildJacob(size);
-
-	size_t debug = 0;
-	std::cout << "pairs in insertSmalls: ";
-	while (debug < size)
+	while (i < order.size())
 	{
-		std::cout << pairs[debug] << " ";
-		++debug;
-	}
-	std::cout << "\n";
+		idx = order[i];
 
-	while (i < jacob.size())
-	{
-		std::cout << "we are now insering " << pairs[jacob[i]].small << " from index " << jacob[i] << "\n";
-		insert(result, pairs[jacob[i]].small, pairs[jacob[i]].big); 
-		++i;
+		insert_pos = insert(result, pairs[idx].small, big_pos[idx]);
+
+		result.insert(result.begin() + insert_pos, pairs[idx].small);
+
+		j = 0;
+		while (j < big_pos.size())
+		{
+			if (big_pos[j] >= insert_pos)
+				big_pos[j]++;
+			j++;
+		}
+		i++;
 	}
 }
 
@@ -183,7 +218,7 @@ std::ostream &operator<<(std::ostream &os, const Pair &pair)
 	return os;
 }
 
-static void insertOdd(std::vector<int> &res, int value)
+void PmergeMe::insertOdd(std::vector<int> &res, int value)
 {
 	std::vector<int>::iterator pos;
 
