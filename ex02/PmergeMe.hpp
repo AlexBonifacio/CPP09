@@ -9,10 +9,11 @@ struct Pair
 	int small;
 };
 
+
 class PmergeMe
 {
 	public:
-		PmergeMe(char **av);
+		PmergeMe(std::vector<int> vect);
 		~PmergeMe();
 		template<typename T>
 		void printVector(const std::vector<T>& vect)
@@ -38,8 +39,7 @@ class PmergeMe
 		std::vector<size_t> buildJacob(size_t i);
 
 	private:
-		std::vector<int> _init;
-		std::vector<int> _test;
+		const std::vector<int> _init;
 
 		PmergeMe();
 		PmergeMe(const PmergeMe& copy);

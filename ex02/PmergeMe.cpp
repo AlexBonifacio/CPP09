@@ -1,43 +1,31 @@
 #include "PmergeMe.hpp"
 #include "cstdlib"
+#include <algorithm>
+#include <numeric> //adjacent_difference
 
-PmergeMe::PmergeMe(char **av)
+void insert(std::vector<int> &result, int small, int big);
+static void insertOdd(std::vector<int> &res, int value);
+
+PmergeMe::PmergeMe(std::vector<int> vect) : _init(vect)
 {
-	int i = 1;
-	int x;
-	while (av[i] != NULL)
+	if (_init.size() < 2)
 	{
-		x = std::atoi(av[i]);
-		_init.push_back(x);
-		i++;
+		throw std::logic_error("Error: provide at least 2 numbers");
+	}
+	std::vector<int>tmp = _init;
+
+	sort(tmp.begin(), tmp.end());
+	std::adjacent_difference(tmp.begin(), tmp.end(), tmp.begin());
+	if (*std::min_element(tmp.begin() + 1, tmp.end()) == 0)
+	{
+		throw std::logic_error("Error: no duplicate values allowed");
 	}
 }
 
 PmergeMe::~PmergeMe() {}
 
-// void PmergeMe::fj()
-// {
-// 	if (input.size() <= 1)
-// 		return;
 
-// 	makePair(input);
-// 	std::vector<int> bigs;
-
-// 	std::vector<int> sorted_bigs = mergeInsertion(bigs);
-
-// }
-
-void insert(std::vector<int> &result, int small)
-{
-
-	std::vector<int>::iterator pos;
-
-	pos = std::lower_bound(result.begin(), result.end(), small); // pos not less than small
-	result.insert(pos, small);									 // insert before pos
-}
-
-
-std::vector<int> extractBigs(std::vector<Pair> pairs)
+std::vector<int> extractBigs(std::vector<Pair> const  &pairs)
 {
 	std::vector<int> bigs;
 
@@ -90,7 +78,6 @@ std::vector<size_t> PmergeMe::buildJacob(size_t n)
 	}
 	std::cout << "build jacob: ";
 	printVector(res);
-	std::cout << "\n";
 	return res;
 }
 
@@ -115,7 +102,7 @@ std::vector<int> PmergeMe::mergeInsertion(std::vector<int> input)
 
 	insertSmalls(sorted, pairs);
 	if (is_odd)
-		insert(sorted, odd);
+		insertOdd(sorted, odd);
 	std::cout << "print vector: ";
 	printVector(sorted);
 	std::cout << "\n";
@@ -123,6 +110,18 @@ std::vector<int> PmergeMe::mergeInsertion(std::vector<int> input)
 	return sorted;
 }
 
+void insert(std::vector<int> &result, int small, int big)
+{
+
+	std::vector<int>::iterator pos;
+	std::vector<int>::iterator max_bound;
+	
+	max_bound = std::find(result.begin(), result.end(), big);
+	if (max_bound == result.end())
+		max_bound = result.end();
+	pos = std::lower_bound(result.begin(), max_bound, small); // pos not less than small
+	result.insert(pos, small);									 // insert before pos
+}
 
 void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs)
 {
@@ -130,10 +129,21 @@ void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &p
 
 	i = 0;
 	size = pairs.size();
-	buildJacob(size);
-	while (i < size)
+	std::vector<size_t> jacob = buildJacob(size);
+
+	size_t debug = 0;
+	std::cout << "pairs in insertSmalls: ";
+	while (debug < size)
 	{
-		insert(result, pairs[i].small);
+		std::cout << pairs[debug] << " ";
+		++debug;
+	}
+	std::cout << "\n";
+
+	while (i < jacob.size())
+	{
+		std::cout << "we are now insering " << pairs[jacob[i]].small << " from index " << jacob[i] << "\n";
+		insert(result, pairs[jacob[i]].small, pairs[jacob[i]].big); 
 		++i;
 	}
 }
@@ -171,4 +181,12 @@ std::ostream &operator<<(std::ostream &os, const Pair &pair)
 {
 	os << "(" << pair.big << ", " << pair.small << ")";
 	return os;
+}
+
+static void insertOdd(std::vector<int> &res, int value)
+{
+	std::vector<int>::iterator pos;
+
+	pos = std::lower_bound(res.begin(), res.end(), value);
+	res.insert(pos, value);
 }
