@@ -6,8 +6,21 @@
 #include <iomanip>	  // setprecision
 #include <vector>
 
-void avInVect(char **av, std::vector<int> &vect);
 double getTime(void);
+
+template <typename Container>
+void avInContainer(char **av, Container &vect)
+{
+	int i = 1;
+	int x;
+
+	while (av[i] != NULL)
+	{
+		x = std::atoi(av[i]);
+		vect.push_back(x);
+		i++;
+	}
+}
 
 int main(int ac, char **av)
 {
@@ -16,7 +29,9 @@ int main(int ac, char **av)
 		std::cerr << "Error: you must provide a list of number\n";
 	}
 	std::vector<int> vect;
-	avInVect(av, vect);
+	std::deque<int> dq;
+	avInContainer(av, vect);
+	avInContainer(av, dq);
 
 	try
 	{
@@ -47,24 +62,21 @@ int main(int ac, char **av)
 
 		std::cout << "Time to process a range of " << result.size() << " elements with std::vector: "
 				  << std::fixed << std::setprecision(2) << elapsed << " us\n";
+
+		start = getTime();
+		std::deque<int> res_deq;
+		PmergeMe b(dq);
+		res_deq = b.mergeInsertion(b.getDeque());
+		end = getTime();
+		elapsed = end - start;
+		std::cout << "Time to process a range of " << res_deq.size() << " elements with std::deque: "
+				  << std::fixed << std::setprecision(2) << elapsed << " us\n";
 	}
 	catch (std::exception &e)
 	{
 		std::cout << e.what() << "\n";
 	}
 	return 0;
-}
-
-void avInVect(char **av, std::vector<int> &vect)
-{
-	int i = 1;
-	int x;
-	while (av[i] != NULL)
-	{
-		x = std::atoi(av[i]);
-		vect.push_back(x);
-		i++;
-	}
 }
 
 double getTime(void)
@@ -74,5 +86,3 @@ double getTime(void)
 	gettimeofday(&tv, NULL);
 	return (static_cast<double>(tv.tv_sec) * 1000000.0 + static_cast<double>(tv.tv_usec));
 }
-
-//
