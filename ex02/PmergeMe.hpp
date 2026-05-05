@@ -41,12 +41,16 @@ private:
 	PmergeMe(const PmergeMe &copy);
 	PmergeMe &operator=(const PmergeMe &other);
 
+	// vector
 	std::vector<Pair> makePair(const std::vector<int> &input);
+	std::vector<int> extractBigs(std::vector<Pair> const &pairs);
 	std::vector<size_t> buildJacob(size_t i);
-	std::vector<size_t> buildBigPositions(std::vector<int> const &chain, std::vector<Pair> const &pairs);
+	std::vector<size_t> buildBigPositions(std::vector<int> const &result, std::vector<Pair> const &pairs);
 	void insertOdd(std::vector<int> &res, int value);
 	void insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs);
 	size_t binaryInsert(std::vector<int> const &res, int value, size_t right);
+
+	// deque
 };
 
 std::ostream &operator<<(std::ostream &os, const Pair &pair);

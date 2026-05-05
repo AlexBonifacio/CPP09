@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <numeric> //adjacent_difference
 
-size_t insert(std::vector<int> const &chain, int value, size_t right);
-
 PmergeMe::PmergeMe(std::vector<int> vect) : _init(vect)
 {
 	if (_init.size() < 2)
@@ -23,7 +21,65 @@ PmergeMe::PmergeMe(std::vector<int> vect) : _init(vect)
 
 PmergeMe::~PmergeMe() {}
 
-std::vector<int> extractBigs(std::vector<Pair> const &pairs)
+std::vector<int> PmergeMe::mergeInsertion(std::vector<int> input)
+{
+	bool is_odd = false;
+	int odd = 0;
+
+	if (input.size() <= 1)
+		return input;
+
+	if (input.size() % 2 != 0)
+	{
+		is_odd = true;
+		odd = input[input.size() - 1];
+	}
+	std::vector<Pair> pairs = makePair(input);
+
+	std::vector<int> bigs = extractBigs(pairs);
+
+	std::vector<int> sorted = mergeInsertion(bigs);
+
+	insertSmalls(sorted, pairs);
+	if (is_odd)
+		insertOdd(sorted, odd);
+	// std::cout << "print vector: ";
+	// printVector(sorted);
+	// std::cout << "\n";
+
+	return sorted;
+}
+
+std::vector<Pair> PmergeMe::makePair(const std::vector<int> &input)
+{
+	const size_t size = input.size();
+	std::vector<Pair> pairs;
+	struct Pair pair;
+
+	size_t i = 0;
+	while (i < size)
+	{
+		if (i + 1 < size)
+		{
+			if (input[i] > input[i + 1])
+			{
+				pair.big = input[i];
+				pair.small = input[i + 1];
+			}
+			else
+			{
+				pair.big = input[i + 1];
+				pair.small = input[i];
+			}
+			pairs.push_back(pair);
+			++i;
+		}
+		++i;
+	}
+	return pairs;
+}
+
+std::vector<int> PmergeMe::extractBigs(std::vector<Pair> const &pairs)
 {
 	std::vector<int> bigs;
 
@@ -38,12 +94,40 @@ std::vector<int> extractBigs(std::vector<Pair> const &pairs)
 	return bigs;
 }
 
-/*
-jacob 0,1,1,3,5,11
- order insertation, 1,3,2,5,4,11,10,9,8,7,6
+void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs)
+{
+	std::vector<size_t> order;
+	std::vector<size_t> big_pos;
+	size_t i;
+	size_t j;
+	size_t idx;
+	size_t insert_pos;
+	size_t order_size;
 
+	order = buildJacob(pairs.size());
+	big_pos = buildBigPositions(result, pairs); // looking at ordered result return the current position of each big in pair
 
-*/
+	i = 0;
+	order_size = order.size();
+	while (i < order_size)
+	{
+		idx = order[i];
+
+		insert_pos = binaryInsert(result, pairs[idx].small, big_pos[idx]);
+
+		result.insert(result.begin() + insert_pos, pairs[idx].small);
+
+		j = 0;
+		while (j < big_pos.size())
+		{
+			if (big_pos[j] >= insert_pos)
+				big_pos[j]++;
+			j++;
+		}
+		i++;
+	}
+}
+
 std::vector<size_t> PmergeMe::buildJacob(size_t n)
 {
 	std::vector<size_t> res;
@@ -79,48 +163,21 @@ std::vector<size_t> PmergeMe::buildJacob(size_t n)
 	return res;
 }
 
-std::vector<int> PmergeMe::mergeInsertion(std::vector<int> input)
-{
-	bool is_odd = false;
-	int odd = 0;
-
-	if (input.size() <= 1)
-		return input;
-
-	if (input.size() % 2 != 0)
-	{
-		is_odd = true;
-		odd = input[input.size() - 1];
-	}
-	std::vector<Pair> pairs = makePair(input);
-
-	std::vector<int> bigs = extractBigs(pairs);
-
-	std::vector<int> sorted = mergeInsertion(bigs);
-
-	insertSmalls(sorted, pairs);
-	if (is_odd)
-		insertOdd(sorted, odd);
-	// std::cout << "print vector: ";
-	// printVector(sorted);
-	// std::cout << "\n";
-
-	return sorted;
-}
-
-std::vector<size_t> PmergeMe::buildBigPositions(std::vector<int> const &chain,std::vector<Pair> const &pairs)
+std::vector<size_t> PmergeMe::buildBigPositions(std::vector<int> const &result, std::vector<Pair> const &pairs)
 {
 	std::vector<size_t> positions;
 	size_t i;
 	size_t j;
 
+	// (8 5) (7 3) 	pairs
+	// 7 8 			result
 	i = 0;
 	while (i < pairs.size())
 	{
 		j = 0;
-		while (j < chain.size())
+		while (j < result.size())
 		{
-			if (chain[j] == pairs[i].big)
+			if (result[j] == pairs[i].big)
 			{
 				positions.push_back(j);
 				break;
@@ -129,6 +186,7 @@ std::vector<size_t> PmergeMe::buildBigPositions(std::vector<int> const &chain,st
 		}
 		i++;
 	}
+	// 1 0 position
 	return positions;
 }
 
@@ -147,75 +205,8 @@ size_t PmergeMe::binaryInsert(std::vector<int> const &res, int value, size_t rig
 		else
 			right = mid;
 	}
-	
+
 	return left; // insert before pos
-}
-
-void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs)
-{
-	std::vector<size_t> order;
-	std::vector<size_t> big_pos;
-	size_t i;
-	size_t j;
-	size_t idx;
-	size_t insert_pos;
-
-	order = buildJacob(pairs.size());
-	big_pos = buildBigPositions(result, pairs);
-
-	i = 0;
-	while (i < order.size())
-	{
-		idx = order[i];
-
-		insert_pos = insert(result, pairs[idx].small, big_pos[idx]);
-
-		result.insert(result.begin() + insert_pos, pairs[idx].small);
-
-		j = 0;
-		while (j < big_pos.size())
-		{
-			if (big_pos[j] >= insert_pos)
-				big_pos[j]++;
-			j++;
-		}
-		i++;
-	}
-}
-
-std::vector<Pair> PmergeMe::makePair(const std::vector<int> &input)
-{
-	const size_t size = input.size();
-	std::vector<Pair> pairs;
-
-	size_t i = 0;
-	while (i < size)
-	{
-		if (i + 1 < size)
-		{
-			struct Pair pair;
-			if (input[i] > input[i + 1])
-			{
-				pair.big = input[i];
-				pair.small = input[i + 1];
-			}
-			else
-			{
-				pair.big = input[i + 1];
-				pair.small = input[i];
-			}
-			pairs.push_back(pair);
-			++i;
-		}
-		++i;
-	}
-	return pairs;
-}
-
-std::ostream &operator<<(std::ostream &os, const Pair &pair)
-{
-	os << "(" << pair.big << ", " << pair.small << ")";
-	return os;
 }
 
 void PmergeMe::insertOdd(std::vector<int> &res, int value)
@@ -224,4 +215,10 @@ void PmergeMe::insertOdd(std::vector<int> &res, int value)
 
 	pos = std::lower_bound(res.begin(), res.end(), value);
 	res.insert(pos, value);
+}
+
+std::ostream &operator<<(std::ostream &os, const Pair &pair)
+{
+	os << "(" << pair.big << ", " << pair.small << ")";
+	return os;
 }
