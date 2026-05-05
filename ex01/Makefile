@@ -1,10 +1,10 @@
 
-NAME = PmergeMe
+NAME = RPN
 
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP -O3
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP
 
-SRCS = main.cpp PmergeMe.cpp
+SRCS = main.cpp RPN.cpp
 OBJ_DIR = obj
 OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 DEP = $(OBJS:.o=.d)

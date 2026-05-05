@@ -28,22 +28,25 @@ int main(int ac, char **av)
 	{
 		std::cerr << "Error: you must provide a list of number\n";
 	}
+
 	std::vector<int> vect;
 	std::deque<int> dq;
 	avInContainer(av, vect);
 	avInContainer(av, dq);
 
+	
+	std::cout << "Before: " << std::setw(5);
+	std::vector<int>::iterator it;
+	it = vect.begin();
+	while (it != vect.end())
+	{
+		std::cout << *it << " ";
+		++it;
+	}
+	std::cout << "\n";
+
 	try
 	{
-		std::cout << "Before: " << std::setw(5);
-		std::vector<int>::iterator it;
-		it = vect.begin();
-		while (it != vect.end())
-		{
-			std::cout << *it << " ";
-			++it;
-		}
-		std::cout << "\n";
 
 		double start;
 		double end;
