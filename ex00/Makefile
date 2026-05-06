@@ -4,7 +4,7 @@ NAME = btc
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP
 
-SRCS = main.cpp BitcoinExchange.cpp
+SRCS = main.cpp BitcoinExchange.cpp BitcoinValue.cpp
 OBJ_DIR = obj
 OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 DEP = $(OBJS:.o=.d)
@@ -12,7 +12,7 @@ DEP = $(OBJS:.o=.d)
 all : $(NAME)
 
 $(NAME) : $(OBJS) Makefile
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME) -lcurl
 
 $(OBJ_DIR) :
 	mkdir -p $(OBJ_DIR)

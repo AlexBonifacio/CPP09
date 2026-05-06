@@ -7,11 +7,20 @@
 #include <iomanip>
 #include <sstream>
 
-BitcoinExchange::BitcoinExchange() {};
+BitcoinExchange::BitcoinExchange() {}
+BitcoinExchange::~BitcoinExchange() {}
+
+BitcoinExchange::BitcoinExchange(const std::string& datas, const std::string& invest_file) : _total_spend(0), _btc_owned(0)
+{
+	if (!storeData(datas))
+		throw std::exception();
+	if (!handleInput(invest_file))
+		throw std::exception();
+}
+
 
 bool BitcoinExchange::storeData(const std::string &filename)
 {
-
 	std::string line;
 	std::ifstream file(filename.c_str()); // input file stream
 	size_t pos;
@@ -19,13 +28,16 @@ bool BitcoinExchange::storeData(const std::string &filename)
 	std::string s_value;
 	double value;
 	char *end;
+	size_t i;
 
+	_data_map.clear();
 	if (!file.is_open())
 	{
 		std::cerr << "Fail to open " << filename << "\n";
 		return false;
 	}
 	std::getline(file, line);
+	i = 2;
 	while (std::getline(file, line))
 	{
 		// std::cout << line << "\n";
@@ -33,7 +45,7 @@ bool BitcoinExchange::storeData(const std::string &filename)
 		if (pos == std::string::npos)
 		{
 			file.close();
-			std::cerr << "Error: ',' not found " << filename << "\n";
+			std::cerr << "Error: ',' not found \"" << filename << "\", line:  " << i << "\n";
 			return false;
 		}
 		key = line.substr(0, pos);
@@ -43,10 +55,11 @@ bool BitcoinExchange::storeData(const std::string &filename)
 		if (errno != 0 || *end != '\0' || value < 0)
 		{
 			file.close();
-			std::cerr << "Error: invalid value in " << filename << "\n";
+			std::cerr << "Error: invalid value in \"" << filename << "\", line:  " << i << "\n";
 			return false;
 		}
 		_data_map[key] = value;
+		++i;
 	}
 	// printMap(_data_map);
 	file.close();
@@ -191,6 +204,7 @@ bool BitcoinExchange::handleInput(const std::string &filename)
 	std::map<std::string, double>::iterator it;
 	double value;
 	double x;
+	double result;
 
 	if (!file.is_open())
 	{
@@ -222,8 +236,10 @@ bool BitcoinExchange::handleInput(const std::string &filename)
 			--it;
 			x = it->second;
 		}
-
-		std::cout << date << " => " << value << " * " << x << " = " << x * value << "\n";
+		result = x * value;
+		std::cout << date << " => " << value << " * " << x << " = " << result << "\n";
+		_total_spend += result;
+		_btc_owned += value;
 	}
 	file.close();
 	return true;
@@ -239,4 +255,14 @@ void BitcoinExchange::printMap(std::map<std::string, double> &map)
 		std::cout << "Key: " << it->first << " | Value: " << it->second << "\n";
 		++it;
 	}
+}
+
+double BitcoinExchange::getTotalSpend() const
+{
+	return _total_spend;
+}
+
+double BitcoinExchange::getBtcOwned() const
+{
+	return _btc_owned;
 }

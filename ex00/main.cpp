@@ -1,9 +1,10 @@
 #include "BitcoinExchange.hpp"
+#include "BitcoinValue.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include <map>
+
 
 int main(int ac, char **av)
 {
@@ -12,10 +13,35 @@ int main(int ac, char **av)
 		std::cerr << "Error: use ./btc \"filename\"\n";
 		return 1;
 	}
-	(void)av;
-	std::string line;
-	BitcoinExchange btx;
 
-	btx.storeData("data.csv");
-	btx.handleInput(av[1]);
+	try{
+
+		BitcoinExchange btt("data.csv", av[1]);
+	}
+	catch (...)
+	{
+		return 1;
+	}
 }
+
+
+// int main(int ac, char **av)
+// {
+// 	if (ac != 2)
+// 	{
+// 		std::cerr << "Error: use ./btc \"filename\"\n";
+// 		return 1;
+// 	}
+
+// 	try{
+
+// 		BitcoinExchange btt("data.csv", av[1]);
+// 		std::cout << "\n";
+// 		BitcoinValue a(btt.getTotalSpend(), btt.getBtcOwned());
+// 	}
+// 	catch (...)
+// 	{
+// 		return 1;
+// 	}
+// }
+
