@@ -28,33 +28,36 @@ static size_t write_callback(void *contents, size_t size,
 	return (total);
 }
 
-void BitcoinValue::extractValue(const std::string &input)
+bool BitcoinValue::extractValue(const std::string &input)
 {
-	(void)input;
 	std::string key;
 	std::string s_value;
 	size_t start;
 	size_t end;
 	double d_value;
 
+	if (input.find("symbol") == std::string::npos || input.find("price") == std::string::npos)
+		return false;
 	start = input.find(":");
 	if (start == std::string::npos)
-		throw std::logic_error("Error: no token \":\" find in JASON file");
+	{
+		return false;
+	}
 	start += 2;
 
 	end = input.find("\"", start);
 	if (start == std::string::npos)
-		throw std::logic_error("Error: no token \":\" find in JASON file");
+		return false;
 	key = input.substr(start, end - start);
 
 	start = input.find(":", end);
 	if (start == std::string::npos)
-		throw std::logic_error("Error: no token \":\" find in JASON file");
+		return false;
 	start += 2;
 
 	end = input.find("\"", start);
 	if (start == std::string::npos)
-		throw std::logic_error("Error: no token \":\" find in JASON file");
+		return false;
 	s_value = input.substr(start, end - start);
 	d_value = strtod(s_value.c_str(), NULL);
 	_pmap[key] = d_value;
@@ -63,6 +66,7 @@ void BitcoinValue::extractValue(const std::string &input)
 	std::cout << "Value for " << it->first << " today is " << std::fixed << std::setprecision(2) << it->second << "\n";
 	std::cout << "You bought for a total of " << _total_spend << " euros of " << it->first << "\n";
 	std::cout << "You now own a total of: " << _btc_owned << "BTC for a total amount of: " << it->second * _btc_owned << "\n";
+	return true;
 }
 
 void BitcoinValue::curlBitcoin(void)
@@ -78,7 +82,7 @@ void BitcoinValue::curlBitcoin(void)
 	curl_easy_setopt(curl, CURLOPT_URL,
 					 "https://api.binance.com/api/v3/ticker/price?symbol=BTCEUR");
 	curl_easy_setopt(curl, CURLOPT_USERAGENT,
-					 "MyBitcoinApp/1.0");
+					 "curl_tests");
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
@@ -88,9 +92,12 @@ void BitcoinValue::curlBitcoin(void)
 	{
 		throw std::runtime_error("Error: curl");
 	}
-	else
-		std::cout << "Curl response" << response << std::endl;
+	// else
+	// 	std::cout << "Curl response:\n" << response << std::endl;
 
-	extractValue(response);
 	curl_easy_cleanup(curl);
+	if (!extractValue(response))
+	{
+		throw std::runtime_error("Error: curl response invalid");
+	}
 }

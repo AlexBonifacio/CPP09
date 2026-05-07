@@ -14,7 +14,7 @@ private:
 	double _btc_owned;
 
 	std::map<std::string, double> _pmap;
-	void extractValue(const std::string &input);
+	bool extractValue(const std::string &input);
 	void valueToday();
 	BitcoinValue();
 	BitcoinValue(const BitcoinValue &copy);

@@ -2,10 +2,10 @@
 #include <string>
 #include <iostream>
 #include <map>
-#include <fstream>
-#include <cstdlib>
+#include <fstream> // ifstream
+#include <cstdlib> // strtod
 #include <iomanip>
-#include <sstream>
+#include <sstream> // stringstream
 
 BitcoinExchange::BitcoinExchange() {}
 BitcoinExchange::~BitcoinExchange() {}
@@ -85,7 +85,6 @@ void trim(std::string &str)
 	str = str.substr(first, last - first + 1);
 }
 
-#include <climits>
 bool BitcoinExchange::isValidValue(std::string &value_str, double &value, const std::string &str)
 {
 	errno = 0;

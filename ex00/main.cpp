@@ -1,9 +1,6 @@
 #include "BitcoinExchange.hpp"
 #include "BitcoinValue.hpp"
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <cstdlib>
 
 
 int main(int ac, char **av)
@@ -39,8 +36,9 @@ int main(int ac, char **av)
 // 		std::cout << "\n";
 // 		BitcoinValue a(btt.getTotalSpend(), btt.getBtcOwned());
 // 	}
-// 	catch (...)
+// 	catch (const std::exception& e)
 // 	{
+// 		std::cout << e.what() << "\n";
 // 		return 1;
 // 	}
 // }
