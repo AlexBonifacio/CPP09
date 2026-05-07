@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <numeric> //adjacent_difference
 
-PmergeMe::PmergeMe(std::vector<int> vect) : _init(vect)
+PmergeMe::PmergeMe(std::vector<int> vect) : _count(0), _init(vect)
 {
 	if (_init.size() < 2)
 	{
@@ -40,9 +40,8 @@ std::vector<int> PmergeMe::mergeInsertion(std::vector<int> input)
 
 	std::vector<int> sorted = mergeInsertion(bigs);
 
-	insertSmalls(sorted, pairs);
-	if (is_odd)
-		insertOdd(sorted, odd);
+	std::vector<Pair> ordered_pairs = reorderPairs(sorted, pairs);
+	insertSmalls(sorted, ordered_pairs, is_odd, odd);
 	// std::cout << "print vector: ";
 	// printVector(sorted);
 	// std::cout << "\n";
@@ -73,6 +72,7 @@ std::vector<Pair> PmergeMe::makePair(const std::vector<int> &input)
 			}
 			pairs.push_back(pair);
 			++i;
+			++_count;
 		}
 		++i;
 	}
@@ -94,7 +94,7 @@ std::vector<int> PmergeMe::extractBigs(std::vector<Pair> const &pairs)
 	return bigs;
 }
 
-void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs)
+void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs, bool is_odd, int odd)
 {
 	std::vector<size_t> order;
 	std::vector<size_t> big_pos;
@@ -104,7 +104,7 @@ void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &p
 	size_t insert_pos;
 	size_t order_size;
 
-	order = buildJacob(pairs.size());
+	order = buildJacob(pairs.size() + static_cast<size_t>(is_odd));
 	big_pos = buildBigPositions(result, pairs); // looking at ordered result return the current position of each big in pair
 
 	i = 0;
@@ -112,10 +112,24 @@ void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &p
 	while (i < order_size)
 	{
 		idx = order[i];
+		if (idx < pairs.size())
+		{
+			std::cout << "b" << idx + 1
+					  << " value: " << pairs[idx].small
+					  << " | right: " << big_pos[idx]
+					  << "\n";
+			insert_pos = binaryInsert(result, pairs[idx].small, big_pos[idx]);
+			result.insert(result.begin() + insert_pos, pairs[idx].small);
+		}
+		else
+		{
 
-		insert_pos = binaryInsert(result, pairs[idx].small, big_pos[idx]);
-
-		result.insert(result.begin() + insert_pos, pairs[idx].small);
+			std::cout << "odd value: " << odd
+					  << " | current size: " << result.size()
+					  << "\n";
+			insert_pos = binaryInsert(result, odd, result.size());
+			result.insert(result.begin() + insert_pos, odd);
+		}
 
 		j = 0;
 		while (j < big_pos.size())
@@ -190,15 +204,40 @@ std::vector<size_t> PmergeMe::buildBigPositions(std::vector<int> const &result, 
 	return positions;
 }
 
+std::vector<Pair> PmergeMe::reorderPairs(
+	std::vector<int> const &sorted,
+	std::vector<Pair> const &pairs)
+{
+	std::vector<Pair> ordered;
+	size_t i;
+	size_t j;
+
+	i = 0;
+	while (i < sorted.size())
+	{
+		j = 0;
+		while (j < pairs.size())
+		{
+			if (pairs[j].big == sorted[i])
+			{
+				ordered.push_back(pairs[j]);
+				break;
+			}
+			j++;
+		}
+		i++;
+	}
+	return ordered;
+}
 size_t PmergeMe::binaryInsert(std::vector<int> const &res, int value, size_t right)
 {
-
 	size_t left;
 	size_t mid;
 
 	left = 0;
 	while (left < right)
 	{
+		++_count;
 		mid = left + (right - left) / 2;
 		if (res[mid] < value)
 			left = mid + 1;
@@ -209,13 +248,18 @@ size_t PmergeMe::binaryInsert(std::vector<int> const &res, int value, size_t rig
 	return left; // insert before pos
 }
 
-void PmergeMe::insertOdd(std::vector<int> &res, int value)
-{
-	std::vector<int>::iterator pos;
+// void PmergeMe::insertOdd(std::vector<int> &res, int value)
+// {
+// 	// std::vector<int>::iterator pos;
 
-	pos = std::lower_bound(res.begin(), res.end(), value);
-	res.insert(pos, value);
-}
+// 	size_t pos;
+// 	// pos = std::lower_bound(res.begin(), res.end(), value);
+// 	size_t before = _count;
+// 	pos = binaryInsert(res, value, res.size());
+// 	res.insert(res.begin() + pos, value);
+
+// 	std::cout << "odd cost: " << _count - before << "\n";
+// }
 
 std::ostream &operator<<(std::ostream &os, const Pair &pair)
 {
@@ -223,9 +267,11 @@ std::ostream &operator<<(std::ostream &os, const Pair &pair)
 	return os;
 }
 
+//  9 8 7 6 5 4 3 2 1 0 19
+// 18 17 16 15 14 13 12 11 10 20
 
 /*---------------------------------------------------------*/
-						/*DEQUE*/
+/*DEQUE*/
 /*---------------------------------------------------------*/
 
 PmergeMe::PmergeMe(std::deque<int> dq) : _dq(dq)
@@ -243,7 +289,6 @@ PmergeMe::PmergeMe(std::deque<int> dq) : _dq(dq)
 		throw std::logic_error("Error: no duplicate values allowed");
 	}
 }
-
 
 std::deque<int> PmergeMe::mergeInsertion(std::deque<int> input)
 {
@@ -283,6 +328,7 @@ std::deque<Pair> PmergeMe::makePair(const std::deque<int> &input)
 	size_t i = 0;
 	while (i < size)
 	{
+		// ++_count;
 		if (i + 1 < size)
 		{
 			if (input[i] > input[i + 1])
@@ -404,4 +450,19 @@ void PmergeMe::insertOdd(std::deque<int> &res, int value)
 
 	pos = std::lower_bound(res.begin(), res.end(), value);
 	res.insert(pos, value);
+}
+
+size_t PmergeMe::getCount() const
+{
+	return _count;
+}
+
+const std::vector<int> &PmergeMe::getVector() const
+{
+	return _init;
+}
+
+const std::deque<int> &PmergeMe::getDeque() const
+{
+	return _dq;
 }

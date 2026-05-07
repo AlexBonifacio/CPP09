@@ -30,4 +30,13 @@ re : fclean all
 
 .PHONY: all clean fclean re
 
+test:
+	@i=0; \
+	while [ $$i -lt 100 ]; do \
+		ARGS=$$(shuf -i 0-20) ; \
+		./PmergeMe $$ARGS; \
+		i=$$((i + 1)); \
+	done; \
+	echo "Done $$i tests"
+
 -include $(DEP)

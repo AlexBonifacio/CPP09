@@ -65,15 +65,15 @@ int main(int ac, char **av)
 
 		std::cout << "Time to process a range of " << result.size() << " elements with std::vector: "
 				  << std::fixed << std::setprecision(2) << elapsed << " us\n";
-
-		start = getTime();
-		std::deque<int> res_deq;
-		PmergeMe b(dq);
-		res_deq = b.mergeInsertion(b.getDeque());
-		end = getTime();
-		elapsed = end - start;
-		std::cout << "Time to process a range of " << res_deq.size() << " elements with std::deque: "
-				  << std::fixed << std::setprecision(2) << elapsed << " us\n";
+		std::cout << "Count insertions: " << a.getCount() << "\n";
+		// start = getTime();
+		// std::deque<int> res_deq;
+		// PmergeMe b(dq);
+		// res_deq = b.mergeInsertion(b.getDeque());
+		// end = getTime();
+		// elapsed = end - start;
+		// std::cout << "Time to process a range of " << res_deq.size() << " elements with std::deque: "
+		// 		  << std::fixed << std::setprecision(2) << elapsed << " us\n";
 	}
 	catch (std::exception &e)
 	{

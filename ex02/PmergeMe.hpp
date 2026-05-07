@@ -29,20 +29,16 @@ public:
 		std::cout << "\n";
 	}
 
-	const std::vector<int> &getVector() const
-	{
-		return _init;
-	}
-
-	const std::deque<int> &getDeque() const
-	{
-		return _dq;
-	}
+	const std::vector<int> &getVector() const;
+	const std::deque<int> &getDeque() const;
 
 	std::vector<int> mergeInsertion(std::vector<int> input);
 	std::deque<int> mergeInsertion(std::deque<int> input);
 
+	size_t getCount() const;
+
 private:
+	size_t _count;
 	const std::vector<int> _init;
 	const std::deque<int> _dq;
 
@@ -55,8 +51,9 @@ private:
 	std::vector<int> extractBigs(std::vector<Pair> const &pairs);
 	std::vector<size_t> buildJacob(size_t i);
 	std::vector<size_t> buildBigPositions(std::vector<int> const &result, std::vector<Pair> const &pairs);
+	std::vector<Pair> reorderPairs(std::vector<int> const &sorted, std::vector<Pair> const &pairs);
 	void insertOdd(std::vector<int> &res, int value);
-	void insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs);
+	void insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs, bool is_odd, int odd);
 	size_t binaryInsert(std::vector<int> const &res, int value, size_t right);
 
 	// deque
