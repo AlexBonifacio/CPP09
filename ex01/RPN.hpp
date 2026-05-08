@@ -5,7 +5,7 @@
 class RPN
 {
 	public:
-		RPN(const std::string input);
+		RPN(const std::string& input);
 		~RPN();
 		void run();
 
