@@ -18,12 +18,13 @@ BitcoinValue::~BitcoinValue()
 {
 }
 
+// contents points to datas, size = char size (mostly), chunk = total size received
 static size_t write_callback(void *contents, size_t size,
-							 size_t nmemb, std::string *output)
+							 size_t chunk, std::string *output)
 {
 	size_t total;
 
-	total = size * nmemb;
+	total = size * chunk;
 	output->append((char *)contents, total);
 	return (total);
 }
@@ -77,12 +78,12 @@ void BitcoinValue::curlBitcoin(void)
 
 	curl = curl_easy_init();
 	if (!curl)
-		throw std::exception();
+		throw std::runtime_error("Error: curl init failed");
 
 	curl_easy_setopt(curl, CURLOPT_URL,
 					 "https://api.binance.com/api/v3/ticker/price?symbol=BTCEUR");
-	curl_easy_setopt(curl, CURLOPT_USERAGENT,
-					 "curl_tests");
+	// curl_easy_setopt(curl, CURLOPT_USERAGENT,
+	// 				 "curl_tests");
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
