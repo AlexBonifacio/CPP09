@@ -16,10 +16,10 @@ public:
 	PmergeMe(std::vector<int> vect);
 	PmergeMe(std::deque<int> dq);
 	~PmergeMe();
-	template <typename T>
-	void printVector(const std::vector<T> &vect)
+	template <typename Container>
+	void printVector(const Container &vect)
 	{
-		typename std::vector<T>::const_iterator it;
+		typename Container::const_iterator it;
 		it = vect.begin();
 		while (it != vect.end())
 		{
@@ -52,7 +52,6 @@ private:
 	std::vector<size_t> buildJacob(size_t i);
 	std::vector<size_t> buildBigPositions(std::vector<int> const &result, std::vector<Pair> const &pairs);
 	std::vector<Pair> reorderPairs(std::vector<int> const &sorted, std::vector<Pair> const &pairs);
-	void insertOdd(std::vector<int> &res, int value);
 	void insertSmalls(std::vector<int> &result, std::vector<Pair> const &pairs, bool is_odd, int odd);
 	size_t binaryInsert(std::vector<int> const &res, int value, size_t right);
 
@@ -60,8 +59,9 @@ private:
 	std::deque<Pair> makePair(const std::deque<int> &input);
 	std::deque<int> extractBigs(std::deque<Pair> const &pairs);
 	std::vector<size_t> buildBigPositions(std::deque<int> const &result, std::deque<Pair> const &pairs);
-	void insertOdd(std::deque<int> &res, int value);
-	void insertSmalls(std::deque<int> &result, std::deque<Pair> const &pairs);
+	std::deque<Pair> reorderPairs(std::deque<int> const &sorted, std::deque<Pair> const &pairs);
+	void insertSmalls(std::deque<int> &result, std::deque<Pair> const &pairs, bool is_odd, int odd);
+
 	size_t binaryInsert(std::deque<int> const &res, int value, size_t right);
 };
 

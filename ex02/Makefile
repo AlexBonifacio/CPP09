@@ -2,7 +2,7 @@
 NAME = PmergeMe
 
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP -O3
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP
 
 SRCS = main.cpp PmergeMe.cpp
 OBJ_DIR = obj
@@ -31,12 +31,14 @@ re : fclean all
 .PHONY: all clean fclean re
 
 test:
-	@i=0; \
-	while [ $$i -lt 100 ]; do \
-		ARGS=$$(shuf -i 0-20) ; \
+	@i=0 n=10; \
+	while [ $$i -lt $$n ]; do \
+		ARGS=$$(shuf -i 0-100000 -n 21) ; \
 		./PmergeMe $$ARGS; \
 		i=$$((i + 1)); \
 	done; \
 	echo "Done $$i tests"
+
+.PHONY: test
 
 -include $(DEP)

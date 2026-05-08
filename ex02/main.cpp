@@ -34,50 +34,62 @@ int main(int ac, char **av)
 	avInContainer(av, vect);
 	avInContainer(av, dq);
 
-	
-	std::cout << "Before: " << std::setw(5);
-	std::vector<int>::iterator it;
-	it = vect.begin();
-	while (it != vect.end())
-	{
-		std::cout << *it << " ";
-		++it;
-	}
-	std::cout << "\n";
-
 	try
 	{
-
 		double start;
 		double end;
-		double elapsed;
-		start = getTime();
-
-		std::vector<int> result;
+		double elapsed_vector;
+		double elapsed_deque;
+		std::vector<int> res_vect;
+		std::deque<int> res_deq;
 		PmergeMe a(vect);
-
-		result = a.mergeInsertion(a.getVector());
+		
+		
+		start = getTime();
+		res_vect = a.mergeInsertion(a.getVector());
 		end = getTime();
-		elapsed = end - start;
+		elapsed_vector = end - start;
 
-		std::cout << "After: " << std::setw(5);
-		a.printVector(result);
+		/* PRINT RESULTS */
+		std::cout << "Before: " << std::setw(17);
+		std::vector<int>::iterator it;
+		it = vect.begin();
+		while (it != vect.end())
+		{
+			std::cout << *it << " ";
+			++it;
+		}
+		std::cout << "\n";
+		std::cout << "After vector sort: " << std::setw(6);
+		a.printVector(res_vect);
+		/* END PRINTS */
 
-		std::cout << "Time to process a range of " << result.size() << " elements with std::vector: "
-				  << std::fixed << std::setprecision(2) << elapsed << " us\n";
-		std::cout << "Count insertions: " << a.getCount() << "\n";
-		// start = getTime();
-		// std::deque<int> res_deq;
-		// PmergeMe b(dq);
-		// res_deq = b.mergeInsertion(b.getDeque());
-		// end = getTime();
-		// elapsed = end - start;
-		// std::cout << "Time to process a range of " << res_deq.size() << " elements with std::deque: "
-		// 		  << std::fixed << std::setprecision(2) << elapsed << " us\n";
+
+
+
+		/* DEQUE */
+		start = getTime();
+		PmergeMe b(dq);
+		res_deq = b.mergeInsertion(b.getDeque());
+		end = getTime();
+		elapsed_deque = end - start;
+		std::cout << "After deque sort: " << std::setw(7);
+		b.printVector(res_deq);
+
+		/* VECTORS TIMER */
+		std::cout << "Time to process a range of " << res_vect.size() << " elements with std::vector: "
+				  << std::fixed << std::setprecision(2) << elapsed_vector << " us\n";
+		/* DEQUE TIMER */
+		std::cout << "Time to process a range of " << res_deq.size() << " elements with std::deque: "
+				  << std::fixed << std::setprecision(2) << elapsed_deque << " us\n";
+			
+		std::cout << "Count insertions vector: " << a.getCount() << "\n";
+		std::cout << "Count insertions deque:  " << b.getCount() << "\n";
+
 	}
 	catch (std::exception &e)
 	{
-		std::cout << e.what() << "\n";
+		std::cerr << e.what() << "\n";
 	}
 	return 0;
 }

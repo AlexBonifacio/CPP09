@@ -6,6 +6,7 @@
 #include <cstdlib> // strtod
 #include <iomanip>
 #include <sstream> // stringstream
+#include <cmath> //isfinite
 
 BitcoinExchange::BitcoinExchange() {}
 BitcoinExchange::~BitcoinExchange() {}
@@ -236,6 +237,11 @@ bool BitcoinExchange::handleInput(const std::string &filename)
 			x = it->second;
 		}
 		result = x * value;
+		if (!std::isfinite(result)) // inf && NaN
+		{
+			std::cerr << "Error: overflow";
+			continue;
+		}
 		std::cout << date << " => " << value << " * " << x << " = " << result << "\n";
 		_total_spend += result;
 		_btc_owned += value;
