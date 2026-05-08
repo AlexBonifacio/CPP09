@@ -18,7 +18,7 @@ int RPN::selectOperator(const char c, int a, int b)
 {
 	if (c == '+')
 	{
-		if ((b > 0 && a > std::numeric_limits<int>::max() - b) || b < 0 && a < std::numeric_limits<int>::min() - b)
+		if ((b > 0 && a > std::numeric_limits<int>::max() - b) || (b < 0 && a < std::numeric_limits<int>::min() - b))
 		{
 			throw std::logic_error("Error: overflow");
 		}
@@ -26,7 +26,7 @@ int RPN::selectOperator(const char c, int a, int b)
 	}
 	if (c == '-') // a - b | b = -1 a = 10 -> 11 | b = 1 a = -10
 	{
-		if ((b < 0 && a > std::numeric_limits<int>::max() + b) || b > 0 && a < std::numeric_limits<int>::min() + b)
+		if ((b < 0 && a > std::numeric_limits<int>::max() + b) || (b > 0 && a < std::numeric_limits<int>::min() + b))
 		{
 			throw std::logic_error("Error: overflow");
 		}

@@ -146,6 +146,7 @@ void PmergeMe::insertSmalls(std::vector<int> &result, std::vector<Pair> const &p
 	}
 }
 
+// suit: 0 1 1 3 5 11
 std::vector<size_t> PmergeMe::buildJacob(size_t n)
 {
 	std::vector<size_t> res;
@@ -176,8 +177,8 @@ std::vector<size_t> PmergeMe::buildJacob(size_t n)
 		}
 		++i;
 	}
-	// std::cout << "build jacob: ";
-	// printVector(res);
+	std::cout << "build jacob: ";
+	printVector(res);
 	return res;
 }
 

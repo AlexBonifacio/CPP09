@@ -30,10 +30,10 @@ re : fclean all
 
 .PHONY: all clean fclean re
 
-test:
+test: Makefile
 	@i=0 n=10; \
 	while [ $$i -lt $$n ]; do \
-		ARGS=$$(shuf -i 0-100000 -n 21) ; \
+		ARGS=$$(shuf -i 0-100000 -n 11) ; \
 		./PmergeMe $$ARGS; \
 		i=$$((i + 1)); \
 	done; \
