@@ -8,6 +8,17 @@ RPN::RPN(const std::string &input) : _expr(input) {};
 
 RPN::~RPN() {};
 
+RPN::RPN(const RPN& copy) : _expr(copy._expr) {};
+
+RPN& RPN::operator=(const RPN& other)
+{
+	if (this != &other)
+	{
+		_expr = other._expr;
+	}
+	return *this;
+}
+
 static bool isOperator(const char c)
 {
 	return (c == '+' || c == '-' || c == '*' || c == '/');

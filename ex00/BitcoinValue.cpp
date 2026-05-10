@@ -15,8 +15,17 @@ BitcoinValue::BitcoinValue(double total_spend, double btc_owned) : _total_spend(
 }
 
 BitcoinValue::~BitcoinValue()
+{}
+
+BitcoinValue& BitcoinValue::operator=(const BitcoinValue &other)
 {
+	return *this;
 }
+
+BitcoinValue::BitcoinValue(const BitcoinValue &copy) : _total_spend(copy._total_spend), _btc_owned(copy._btc_owned)
+{}
+
+
 
 // contents points to datas, size = char size (mostly), chunk = total size received
 static size_t write_callback(void *contents, size_t size,
@@ -61,9 +70,9 @@ bool BitcoinValue::extractValue(const std::string &input)
 		return false;
 	s_value = input.substr(start, end - start);
 	d_value = strtod(s_value.c_str(), NULL);
-	_pmap[key] = d_value;
+	_p_map[key] = d_value;
 
-	std::map<std::string, double>::iterator it = _pmap.begin();
+	std::map<std::string, double>::iterator it = _p_map.begin();
 	std::cout << "Value for " << it->first << " today is " << std::fixed << std::setprecision(2) << it->second << "\n";
 	std::cout << "You bought for a total of " << _total_spend << " euros of " << it->first << "\n";
 	std::cout << "You now own a total of: " << _btc_owned << "BTC for a total amount of: " << it->second * _btc_owned << "\n";

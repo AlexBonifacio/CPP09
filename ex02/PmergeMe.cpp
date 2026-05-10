@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <numeric> //adjacent_difference
 
+PmergeMe::PmergeMe() : _count(0) {}
+
 PmergeMe::PmergeMe(std::vector<int> vect) : _count(0), _init(vect)
 {
 	if (_init.size() < 2)
@@ -24,6 +26,17 @@ PmergeMe::PmergeMe(std::vector<int> vect) : _count(0), _init(vect)
 }
 
 PmergeMe::~PmergeMe() {}
+
+PmergeMe::PmergeMe(const PmergeMe &other) : _count(other._count), _init(other._init) {}
+
+PmergeMe& PmergeMe::operator=(const PmergeMe &other)
+{
+	if (this != &other)
+	{
+		_count = other._count;
+	}
+	return *this;
+}
 
 std::vector<int> PmergeMe::mergeInsertion(std::vector<int> input)
 {
@@ -177,8 +190,6 @@ std::vector<size_t> PmergeMe::buildJacob(size_t n)
 		}
 		++i;
 	}
-	std::cout << "build jacob: ";
-	printVector(res);
 	return res;
 }
 

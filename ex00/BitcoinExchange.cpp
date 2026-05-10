@@ -19,6 +19,16 @@ BitcoinExchange::BitcoinExchange(const std::string& datas, const std::string& in
 		throw std::exception();
 }
 
+BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange &other)
+{
+	if (this != &other)
+	{
+		_total_spend = other._total_spend;
+		_btc_owned = other._btc_owned;
+		_data_map = other._data_map;
+	}
+	return *this;
+}
 
 bool BitcoinExchange::storeData(const std::string &filename)
 {
